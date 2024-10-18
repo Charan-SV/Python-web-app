@@ -34,12 +34,12 @@ header nav ul li {
 }
 
 header nav ul li a {
-    color: #fff;
+    color: #0e0e0e;
     text-decoration: none;
     padding: 10px 20px;
     border: 2px solid #fff;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(234, 226, 232, 0.863);
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -56,12 +56,12 @@ header nav ul li a:hover {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    color: #000; /* Set text color to black for visibility */
+    color: #e8700e; /* Set text color to black for visibility */
 }
 
 
 h1 {
-    color: #333;
+    color: #ef9308;
     font-size: 2.5em;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
@@ -182,7 +182,7 @@ input[type="password"] {
 button[type="submit"] {
     width: 100%;
     padding: 10px;
-    background-color: #333;
+    background-color: #eb610b;
     color: white;
     border: none;
     border-radius: 5px;
@@ -206,8 +206,50 @@ button[type="submit"]:hover {
 }
 
 .index-container h1 {
+    font-family: Verdana, sans-serif;/* Adds a stylish font */
     font-size: 2em;
-    color: #333;
+    color: #f47a09;
     text-align: center;
     white-space: nowrap; /* Ensures text stays on one line */
+}
+
+
+
+.user-details-card {
+    flex: 1; /* Take available space */
+}
+
+.devops-tools-card {
+    flex: 1; /* Take available space */
+}
+
+
+.dashboard {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 48%;
+    text-align: center; /* Center text in cards */
+}
+
+.tool-section {
+    margin-top: 15px;
+}
+
+.tool-logo {
+    width: 50px;
+    height: auto;
+    display: block;
+    margin: 10px auto; /* Center logo */
+}
+
+.tool-info{
+    color: #333;
 }

@@ -62,7 +62,7 @@ def login():
                     if result and bcrypt.check_password_hash(result[0], password):
                         session['username'] = username
                         flash("Login successful!", "success")
-                        return redirect(url_for('user_details'))  # Redirect to user details page
+                        return redirect(url_for('dashboard'))  # Redirect to dashboard
                     else:
                         flash("Invalid username or password.", "danger")
         except Exception as e:
@@ -70,6 +70,15 @@ def login():
             flash("An error occurred. Please try again.", "danger")
 
     return render_template('login.html')
+
+@app.route('/dashboard')
+def dashboard():
+    username = session.get('username')
+    if username:
+        return render_template('dashboard.html', username=username)
+    else:
+        flash("You need to log in first.", "danger")
+        return redirect(url_for('login'))
 
 @app.route('/user_details')
 def user_details():
@@ -85,10 +94,14 @@ def user_details():
         except Exception as e:
             print(f"Error occurred while fetching user details: {e}")
             flash("Could not retrieve user details.", "danger")
-            return redirect(url_for('home'))
+            return redirect(url_for('dashboard'))
     else:
         flash("You need to log in first.", "danger")
         return redirect(url_for('login'))
+
+@app.route('/devops_tools')
+def devops_tools():
+    return render_template('devops.html')
 
 @app.route('/logout')
 def logout():

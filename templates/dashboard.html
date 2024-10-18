@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Demo DevOps Project</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Dashboard</h1>
+        <div class="dashboard">
+            <!-- User Details Card -->
+            <div class="card user-details-card">
+                <h2><a href="{{ url_for('user_details') }}">User Details</a></h2>
+            </div>
+
+            <!-- DevOps Tools Card -->
+            <div class="card devops-tools-card">
+                <h2><a href="{{ url_for('devops_tools') }}">DevOps Tools</a></h2>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2023 Demo DevOps Project. All rights reserved.</p>
+    </footer>
+</body>
+</html>

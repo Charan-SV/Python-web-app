@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Tools - Demo DevOps Project</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .tool-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tool-logo {
+            width: 100px;  /* Adjust size as needed */
+            height: auto;
+            margin-right: 20px; /* Space between image and text */
+        }
+
+        .tool-info {
+            flex: 1; /* Allows the text to take the remaining space */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('user_details') }}">User Details</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>DevOps Tools</h1>
+
+        <div class="tool-section">
+            <img src="{{ url_for('static', filename='github-logo.png') }}" alt="GitHub Logo" class="tool-logo">
+            <div class="tool-info">
+                <h2>GitHub</h2>
+                <p>GitHub is a platform for version control and collaboration, allowing developers to work together on projects from anywhere.</p>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <img src="{{ url_for('static', filename='docker-logo.jpg') }}" alt="Docker Logo" class="tool-logo">
+            <div class="tool-info">
+                <h2>Docker</h2>
+                <p>Docker is a tool designed to make it easier to create, deploy, and run applications by using containers.</p>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <img src="{{ url_for('static', filename='kubernetes-logo.png') }}" alt="Kubernetes Logo" class="tool-logo">
+            <div class="tool-info">
+                <h2>Kubernetes</h2>
+                <p>Kubernetes is an open-source system for automating the deployment, scaling, and management of containerized applications.</p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2023 Demo DevOps Project. All rights reserved.</p>
+    </footer>
+</body>
+</html>
