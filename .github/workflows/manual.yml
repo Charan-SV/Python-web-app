@@ -27,6 +27,6 @@ jobs:
     - name: Postgres Login and Execute psql Commands
       run: |
         PGPASSWORD="${{ secrets.POSTGRES_PASSWORD }}" psql --host="${{ secrets.POSTGRES_HOST }}" --port="${{ secrets.POSTGRES_PORT }}" --username="${{ secrets.POSTGRES_USER }}" --dbname="${{ secrets.POSTGRES_DB }}" <<EOF
-        \c
+        \d
         \q
         EOF
