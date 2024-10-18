@@ -14,7 +14,8 @@ jobs:
     - name: check node
       run: kubectl get node
 
-    - name: check docker
-      run: docker ps -a
+    - name: docker login
+      run: docker login --username="${{ secrets.DOCKERHUB_USERNAME }}" --password="${{ secrets.DOCKER_TOKEN }}"
       
-
+    - name: docker logout
+      run: docker login --username="${{ secrets.DOCKERHUB_USERNAME }}" --password="${{ secrets.DOCKER_TOKEN }}"
