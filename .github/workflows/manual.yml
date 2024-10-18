@@ -6,25 +6,48 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-    
+
     steps:
-    # Step 1: Check Kubernetes nodes using kubectl
+    # Step 1: Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Step 2: Check Kubernetes Nodes
     - name: Check Kubernetes Nodes
       run: |
         kubectl get node
 
-    # Step 2: Docker Login
+    # Step 3: Docker Login
     - name: Docker Login
       run: |
         echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
     
-    # Step 3: Docker Logout
+    # Step 4: Build Docker Image
+    - name: Build Docker Image
+      run: |
+        # Build the Docker image from the Dockerfile
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/web-app:latest .
+    
+    # Step 5: Tag Docker Image
+    - name: Tag Docker Image
+      run: |
+        # Tag the Docker image
+        docker tag ${{ secrets.DOCKERHUB_USERNAME }}/web-app:latest ${{ secrets.DOCKERHUB_USERNAME }}/web-app:${{ github.sha }}
+
+    # Step 6: Push Docker Image to Docker Hub
+    - name: Push Docker Image
+      run: |
+        # Push both the latest and the commit SHA tags to Docker Hub
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/web-app:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/web-app:${{ github.sha }}
+
+    # Step 7: Docker Logout
     - name: Docker Logout
       run: |
         docker logout || true
 
-    # Step 4: Postgres Login and Execute psql Commands
-    - name: Postgres Login and Execute psql Commands
+    # Step 8: Postgres Login and List Tables
+    - name: Postgres Login and List Tables
       run: |
         PGPASSWORD="${{ secrets.POSTGRES_PASSWORD }}" psql --host="${{ secrets.POSTGRES_HOST }}" --port="${{ secrets.POSTGRES_PORT }}" --username="${{ secrets.POSTGRES_USER }}" --dbname="${{ secrets.POSTGRES_DB }}" <<EOF
         \dt
