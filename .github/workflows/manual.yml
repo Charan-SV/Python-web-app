@@ -1,21 +1,32 @@
 name: web-app
+
 on:
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
   build:
     # The type of runner that the job will run on
     runs-on: self-hosted
     
     steps:
-    # Runs a single command using the runners shell
-    - name: check node
-      run: kubectl get node
+    # Step 1: Check Kubernetes nodes using kubectl
+    - name: Check Kubernetes Nodes
+      run: |
+        kubectl get node
 
-    - name: docker login
-      run: docker login --username="${{ secrets.DOCKERHUB_USERNAME }}" --password="${{ secrets.DOCKERHUB_TOKEN }}"
-      
-    - name: docker logout
-      run: docker logout || true
+    # Step 2: Log in to Docker Hub using secrets
+    - name: Docker Login
+      run: |
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+    
+    # Step 3: Log out of Docker Hub
+    - name: Docker Logout
+      run: |
+        docker logout || true
+
+    # Step 4: Log in to PostgreSQL using environment variables or secrets
+    - name: Postgres Login
+      run: |
+        PGPASSWORD="${{ secrets.POSTGRES_PASSWORD }}" psql --host="${{ secrets.POSTGRES_HOST }}" --port="${{ secrets.POSTGRES_PORT }}" --username="${{ secrets.POSTGRES_USER }}" --dbname="${{ secrets.POSTGRES_DB }}"
+        \c
+        \q
