@@ -11,5 +11,10 @@ jobs:
     
     steps:
     # Runs a single command using the runners shell
-    - name: Send greeting
+    - name: check node
       run: kubectl get node
+
+    - name: check docker
+      run: docker ps -a
+      
+
