@@ -1,18 +1,19 @@
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 import psycopg2
 from flask_bcrypt import Bcrypt
+import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Consider using an environment variable for production
+app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')  # Use an environment variable for production
 bcrypt = Bcrypt(app)
 
 # Database connection parameters
 db_params = {
-    'dbname': 'webapp',
-    'user': 'postgres',
-    'password': '1234',
-    'host': 'localhost',
-    'port': '5432'
+    'dbname': os.getenv('DB_NAME', 'webapp'),
+    'user': os.getenv('DB_USER', 'postgres'),
+    'password': os.getenv('DB_PASSWORD', '1234'),
+    'host': os.getenv('DB_HOST', 'localhost'),
+    'port': os.getenv('DB_PORT', '5432')
 }
 
 def get_db_connection():
@@ -109,5 +110,6 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for('home'))
 
+# This is where you add the line to run the app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
