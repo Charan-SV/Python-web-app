@@ -64,7 +64,7 @@ spec:
   selector:
     app: postgres  # Ensure you have a Deployment or StatefulSet with this label for the PostgreSQL pod
 
--------
+---
 
 apiVersion: apps/v1
 kind: StatefulSet
