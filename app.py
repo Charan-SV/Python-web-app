@@ -2,10 +2,15 @@ from flask import Flask, request, render_template, redirect, url_for, session, f
 import psycopg2
 from flask_bcrypt import Bcrypt
 import os
+import logging
+from psycopg2 import IntegrityError
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')  # Use an environment variable for production
 bcrypt = Bcrypt(app)
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
 
 # Database connection parameters
 db_params = {
@@ -17,7 +22,11 @@ db_params = {
 }
 
 def get_db_connection():
-    return psycopg2.connect(**db_params)
+    try:
+        return psycopg2.connect(**db_params)
+    except Exception as e:
+        logging.error(f"Database connection error: {e}")
+        raise
 
 @app.route('/')
 def home():
@@ -42,8 +51,11 @@ def signup():
                     conn.commit()
             flash("User successfully signed up!", "success")
             return redirect(url_for('home', signup='success'))
+        except IntegrityError:
+            logging.error("Integrity error: Username or email already exists.")
+            flash("Username or email already exists.", "danger")
         except Exception as e:
-            print(f"Error occurred: {e}")
+            logging.error(f"Error occurred during signup: {e}")
             flash("Signup failed. Please try again.", "danger")
 
     return render_template('signup.html')
@@ -67,7 +79,7 @@ def login():
                     else:
                         flash("Invalid username or password.", "danger")
         except Exception as e:
-            print(f"Error occurred during login: {e}")
+            logging.error(f"Error occurred during login: {e}")
             flash("An error occurred. Please try again.", "danger")
 
     return render_template('login.html')
@@ -93,7 +105,7 @@ def user_details():
                     email = result[0] if result else None
             return render_template('user_details.html', username=username, email=email)
         except Exception as e:
-            print(f"Error occurred while fetching user details: {e}")
+            logging.error(f"Error occurred while fetching user details: {e}")
             flash("Could not retrieve user details.", "danger")
             return redirect(url_for('dashboard'))
     else:
