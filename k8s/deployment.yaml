@@ -63,3 +63,51 @@ spec:
       targetPort: 5432
   selector:
     app: postgres  # Ensure you have a Deployment or StatefulSet with this label for the PostgreSQL pod
+
+-------
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: _{_NAMESPACE_}_  # Specify your namespace
+  labels:
+    app: postgres
+spec:
+  serviceName: "postgres-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13  # Use any appropriate version
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: "webapp"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret  # Ensure this secret exists
+              key: password
+        volumeMounts:
+        - name: postgres-persistent-storage
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-persistent-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi  # Specify the storage size
+
