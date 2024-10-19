@@ -24,14 +24,11 @@ spec:
         - name: DB_NAME
           value: "webapp"
         - name: DB_USER
-          value: "postgres"
+          value: "webapp"  # Hard-coded user
         - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: password
+          value: "1234"  # Hard-coded password
         - name: DB_HOST
-          value: "postgres-service"  # Adjust if needed
+          value: "20.109.16.207"  # Replace with your PostgreSQL host, if needed
         - name: DB_PORT
           value: "5432"
 
@@ -49,65 +46,4 @@ spec:
     - port: 80         # The port that will be exposed
       targetPort: 5000 # The port on the container
       nodePort: 30000   # Specify the NodePort if you want a specific port; otherwise, one will be assigned automatically
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-service
-  namespace: _{_NAMESPACE_}_
-spec:
-  type: ClusterIP  # Typically, PostgreSQL doesn't need to be exposed externally
-  ports:
-    - port: 5432
-      targetPort: 5432
-  selector:
-    app: postgres  # Ensure you have a Deployment or StatefulSet with this label for the PostgreSQL pod
-
----
-
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: postgres
-  namespace: _{_NAMESPACE_}_  # Specify your namespace
-  labels:
-    app: postgres
-spec:
-  serviceName: "postgres-service"
-  replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      containers:
-      - name: postgres
-        image: postgres:13  # Use any appropriate version
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_DB
-          value: "webapp"
-        - name: POSTGRES_USER
-          value: "postgres"
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret  # Ensure this secret exists
-              key: password
-        volumeMounts:
-        - name: postgres-persistent-storage
-          mountPath: /var/lib/postgresql/data
-  volumeClaimTemplates:
-  - metadata:
-      name: postgres-persistent-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 10Gi  # Specify the storage size
 
