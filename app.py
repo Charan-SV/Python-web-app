@@ -10,9 +10,9 @@ bcrypt = Bcrypt(app)
 # Database connection parameters
 db_params = {
     'dbname': os.getenv('DB_NAME', 'webapp'),
-    'user': os.getenv('DB_USER', 'postgres'),
+    'user': os.getenv('DB_USER', 'webapp'),
     'password': os.getenv('DB_PASSWORD', '1234'),
-    'host': os.getenv('DB_HOST', 'localhost'),
+    'host': os.getenv('DB_HOST', '20.109.16.207'),
     'port': os.getenv('DB_PORT', '5432')
 }
 
