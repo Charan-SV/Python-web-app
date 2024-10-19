@@ -2,15 +2,10 @@ from flask import Flask, request, render_template, redirect, url_for, session, f
 import psycopg2
 from flask_bcrypt import Bcrypt
 import os
-import logging
-from psycopg2 import IntegrityError
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')  # Use an environment variable for production
 bcrypt = Bcrypt(app)
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
 
 # Database connection parameters
 db_params = {
@@ -22,23 +17,27 @@ db_params = {
 }
 
 def get_db_connection():
-    try:
-        return psycopg2.connect(**db_params)
-    except Exception as e:
-        logging.error(f"Database connection error: {e}")
-        raise
+    """Establish a database connection."""
+    return psycopg2.connect(**db_params)
 
 @app.route('/')
 def home():
+    """Render the home page."""
     signup_success = request.args.get('signup')
     return render_template('index.html', signup_success=signup_success)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    """Handle user signup."""
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
+        
+        # Debugging output
+        print(f"Received - Username: {username}, Email: {email}, Password: {password}")
+
+        # Hash the password
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         try:
@@ -51,17 +50,15 @@ def signup():
                     conn.commit()
             flash("User successfully signed up!", "success")
             return redirect(url_for('home', signup='success'))
-        except IntegrityError:
-            logging.error("Integrity error: Username or email already exists.")
-            flash("Username or email already exists.", "danger")
         except Exception as e:
-            logging.error(f"Error occurred during signup: {e}")
+            print(f"Error occurred during signup: {e}")  # Log the error to the console
             flash("Signup failed. Please try again.", "danger")
 
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Handle user login."""
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -79,13 +76,14 @@ def login():
                     else:
                         flash("Invalid username or password.", "danger")
         except Exception as e:
-            logging.error(f"Error occurred during login: {e}")
+            print(f"Error occurred during login: {e}")  # Log the error to the console
             flash("An error occurred. Please try again.", "danger")
 
     return render_template('login.html')
 
 @app.route('/dashboard')
 def dashboard():
+    """Render the user dashboard."""
     username = session.get('username')
     if username:
         return render_template('dashboard.html', username=username)
@@ -95,6 +93,7 @@ def dashboard():
 
 @app.route('/user_details')
 def user_details():
+    """Display user details."""
     username = session.get('username')
     if username:
         try:
@@ -105,7 +104,7 @@ def user_details():
                     email = result[0] if result else None
             return render_template('user_details.html', username=username, email=email)
         except Exception as e:
-            logging.error(f"Error occurred while fetching user details: {e}")
+            print(f"Error occurred while fetching user details: {e}")  # Log the error to the console
             flash("Could not retrieve user details.", "danger")
             return redirect(url_for('dashboard'))
     else:
@@ -114,10 +113,12 @@ def user_details():
 
 @app.route('/devops_tools')
 def devops_tools():
+    """Render the DevOps tools page."""
     return render_template('devops.html')
 
 @app.route('/logout')
 def logout():
+    """Handle user logout."""
     session.pop('username', None)
     flash("You have been logged out.", "info")
     return redirect(url_for('home'))
