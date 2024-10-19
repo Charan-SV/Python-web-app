@@ -55,3 +55,10 @@ jobs:
         \dt
         \q
         EOF
+
+    # Step 8: Port Forwarding
+    - name: Port Forwarding
+      run: |
+        kubectl port-forward svc/web-app 30000:80 --namespace="${{ secrets.NAMESPACE }}" &
+        sleep 5  # Optional: wait for the port-forwarding to establish
+        echo "Port forwarding established."
