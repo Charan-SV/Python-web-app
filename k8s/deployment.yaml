@@ -4,7 +4,7 @@ metadata:
   labels:
     app: web-app
   name: web-app
-  namespace: my-namespace  # Replace with your namespace
+  namespace: _{_NAMESPACE_}_  # Replace with your namespace
 spec:
   replicas: 1
   selector:
@@ -16,7 +16,7 @@ spec:
         app: web-app
     spec:
       containers:
-      - image: my-image:latest  # Replace with your actual image
+      - image: _{_IMAGE_}_  # Replace with your actual image
         name: web-app
         ports:
         - containerPort: 5000
