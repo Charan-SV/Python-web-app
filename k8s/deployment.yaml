@@ -164,3 +164,17 @@ spec:
   storageClassName: "manual"
   hostPath:
     path: "/mnt/data/postgres"  # Replace with your local path
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-storage-postgres-db-0
+  namespace: _{_NAMESPACE_}_
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: manual  # Ensure this matches the PV's storageClassName
+
