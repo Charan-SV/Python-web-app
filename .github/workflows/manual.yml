@@ -15,7 +15,7 @@ jobs:
     # Step 2: Check Kubernetes Nodes
     - name: Check Kubernetes Nodes
       run: |
-        kubectl get node
+        kubectl get nodes
 
     # Step 3: Docker Login
     - name: Docker Login
@@ -35,6 +35,7 @@ jobs:
         sed -i "s|_{_NAMESPACE_}_|${{ secrets.NAMESPACE }}|g" k8s/deployment.yaml
         sed -i "s|_{_IMAGE_}_|${{ secrets.DOCKERHUB_USERNAME }}/web-app:${{ github.sha }}|g" k8s/deployment.yaml
         
+        # Create or update the deployment
         if kubectl get deployment web-app --namespace="${{ secrets.NAMESPACE }}"; then
           echo "Updating existing deployment..."
           kubectl apply -f k8s/deployment.yaml
@@ -56,10 +57,13 @@ jobs:
         \q
         EOF
 
-    # Step 8: Port Forwarding
+    # Step 8: Port Forwarding (optional for accessing the service)
     - name: Port Forwarding
       run: |
-        sleep 5 
+        # Start port-forwarding in the background
         kubectl port-forward svc/web-app 30000:80 --namespace="${{ secrets.NAMESPACE }}" &
-         # Optional: wait for the port-forwarding to establish
-        echo "Port forwarding established."
+
+        # Optional: Wait for a few seconds to ensure port forwarding is established
+        echo "Waiting for port forwarding to establish..."
+        sleep 5
+        echo "Port forwarding established. Access the web app at http://localhost:30000"
