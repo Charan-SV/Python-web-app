@@ -49,13 +49,20 @@ jobs:
       run: |
         docker logout || true
 
-    # Step 7: Postgres Login and List Tables
-    - name: Postgres Login and List Tables
+    # Step 7: Postgres Login, Create Database and Users Table
+    - name: Postgres Login and Create Database and Users Table
       run: |
-        PGPASSWORD="${{ secrets.POSTGRES_PASSWORD }}" psql --host="${{ secrets.POSTGRES_HOST }}" --port="${{ secrets.POSTGRES_PORT }}" --username="${{ secrets.POSTGRES_USER }}" --dbname="${{ secrets.POSTGRES_DB }}" <<EOF
-        \dt
-        \q
+        kubectl exec -i postgresql-db-0 -n webapp -- psql -U postgres <<EOF
+        CREATE DATABASE IF NOT EXISTS webapp;
+        \c webapp;
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(50) NOT NULL,
+            email VARCHAR(100) NOT NULL,
+            password VARCHAR(100) NOT NULL
+        );
         EOF
+
 
     # Step 8: Port Forwarding (optional for accessing the service)
     - name: Port Forwarding
