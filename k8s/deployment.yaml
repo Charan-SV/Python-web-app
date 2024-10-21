@@ -178,7 +178,3 @@ spec:
               number: 30000  # Ensure this matches your service definition
         path: /
         pathType: Prefix
-  tls:
-  - hosts:
-    - web-app-webapp.192.168.49.2.nip.io  # Match the host defined above
-    secretName: ingress-local-tls
