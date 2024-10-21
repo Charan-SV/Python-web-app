@@ -1,4 +1,3 @@
-# PostgreSQL StatefulSet
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -16,6 +15,13 @@ spec:
         app: postgresql-db
     spec:
       terminationGracePeriodSeconds: 10
+      initContainers:
+      - name: init-db
+        image: postgres:latest
+        command: ['sh', '-c', 'until pg_isready -h postgresql-db-service -U postgres; do echo waiting for database; sleep 2; done; psql -h postgresql-db-service -U postgres -d webapp -c "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username VARCHAR(50) NOT NULL, email VARCHAR(100) NOT NULL, password VARCHAR(255) NOT NULL);"']
+        env:
+        - name: PGPASSWORD
+          value: "Test@123"  # Use the same password as in the main container
       containers:
       - name: postgresql-db
         image: postgres:latest
@@ -27,9 +33,9 @@ spec:
           mountPath: /data
         env:
         - name: POSTGRES_USER
-          value: "postgres"  # Hard-coded user set to 'postgres'
+          value: "postgres"
         - name: POSTGRES_PASSWORD
-          value: "Test@123"  # Hard-coded password
+          value: "Test@123"
         - name: PGDATA
           value: /data/pgdata
   volumeClaimTemplates:
