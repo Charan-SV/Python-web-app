@@ -1,11 +1,10 @@
-# Web App Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     app: web-app
   name: web-app
-  namespace: _{_NAMESPACE_}_  # Replace _{_NAMESPACE_}_ with actual namespace
+  namespace: _{_NAMESPACE_}_
 spec:
   replicas: 1
   selector:
@@ -17,7 +16,7 @@ spec:
         app: web-app
     spec:
       containers:
-      - image: _{_IMAGE_}_  # Replace _{_IMAGE_}_ with the actual image URL
+      - image: _{_IMAGE_}_
         name: web-app
         ports:
         - containerPort: 5000
@@ -25,32 +24,28 @@ spec:
         - name: DB_NAME
           value: "webapp"
         - name: DB_USER
-          value: "webapp"
+          value: "webapp"  # Hard-coded user
         - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: DB_PASSWORD
+          value: "1234"  # Hard-coded password
         - name: DB_HOST
-          value: "postgres-db"  # Pointing to the PostgreSQL StatefulSet's service name
+          value: "postgres-db"  # Use service name for PostgreSQL StatefulSet
         - name: DB_PORT
           value: "5432"
 
 ---
-# Web App Service (NodePort)
 apiVersion: v1
 kind: Service
 metadata:
   name: web-app
-  namespace: _{_NAMESPACE_}_  # Replace _{_NAMESPACE_}_ with actual namespace
+  namespace: _{_NAMESPACE_}_
 spec:
-  type: NodePort
+  type: NodePort  # Change to NodePort
   selector:
     app: web-app
   ports:
-    - port: 80         # Expose port 80
-      targetPort: 5000  # Map to the container's port 5000
-      nodePort: 30000   # Specify NodePort; adjust if needed or leave for auto-assignment
+    - port: 80         # The port that will be exposed
+      targetPort: 5000 # The port on the container
+      nodePort: 30000   # Specify the NodePort if you want a specific port; otherwise, one will be assigned automatically
 
 ---
 # PostgreSQL StatefulSet
@@ -58,7 +53,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-db
-  namespace: _{_NAMESPACE_}_  # Replace _{_NAMESPACE_}_ with actual namespace
+  namespace: _{_NAMESPACE_}_
 spec:
   serviceName: "postgres-db"
   replicas: 1
@@ -75,7 +70,7 @@ spec:
         image: postgres:14  # PostgreSQL image
         env:
         - name: POSTGRES_USER
-          value: "postgres"  # Default superuser
+          value: "postgres"  # Using default 'postgres' superuser
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -83,7 +78,7 @@ spec:
               key: POSTGRES_PASSWORD
         command: ['sh', '-c', '
           until pg_isready -h postgres-db -p 5432; do
-            echo "waiting for postgres...";
+            echo waiting for postgres;
             sleep 2;
           done;
           psql -h postgres-db -U postgres -c "CREATE USER webapp WITH PASSWORD \'$DB_USER_PASSWORD\';";
@@ -104,7 +99,7 @@ spec:
         - containerPort: 5432
         env:
         - name: POSTGRES_USER
-          value: "postgres"
+          value: "postgres"  # Using default 'postgres' superuser
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -120,7 +115,7 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 10Gi  # Adjust storage as needed
+          storage: 10Gi  # Adjust storage size as needed
       volumeMode: Filesystem
       storageClassName: ""
       selector: {}
@@ -131,7 +126,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-db
-  namespace: _{_NAMESPACE_}_  # Replace _{_NAMESPACE_}_ with actual namespace
+  namespace: _{_NAMESPACE_}_
 spec:
   clusterIP: None  # Headless service for StatefulSet
   selector:
@@ -146,10 +141,10 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: db-secret
-  namespace: _{_NAMESPACE_}_  # Replace _{_NAMESPACE_}_ with actual namespace
+  namespace: _{_NAMESPACE_}_
 type: Opaque
 data:
-  POSTGRES_PASSWORD: MTIzNA==  # Base64 encoded '1234' for superuser postgres password
+  POSTGRES_PASSWORD: MTIzNA==  # Base64 encoded '1234'
   DB_PASSWORD: MTIzNA==         # Base64 encoded '1234' for webapp user password
 
 ---
@@ -158,7 +153,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: postgres-local-pv
-  namespace: _{_NAMESPACE_}_  # Replace _{_NAMESPACE_}_ with actual namespace
+  namespace: _{_NAMESPACE_}_
 spec:
   capacity:
     storage: 10Gi  # Adjust storage as needed
@@ -167,5 +162,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: "manual"
   hostPath:
-    path: "/mnt/data/postgres"  # Replace with your actual local path on the node
-    type: DirectoryOrCreate
+    path: "/mnt/data/postgres"  # Replace with your local path
