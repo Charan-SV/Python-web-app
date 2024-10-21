@@ -4,7 +4,7 @@ metadata:
   labels:
     app: web-app
   name: web-app
-  namespace: _{_NAMESPACE_}_
+  namespace: your-namespace # Replace with your actual namespace
 spec:
   replicas: 1
   selector:
@@ -16,7 +16,7 @@ spec:
         app: web-app
     spec:
       containers:
-      - image: _{_IMAGE_}_
+      - image: your-image # Replace with your actual image
         name: web-app
         ports:
         - containerPort: 5000
@@ -24,11 +24,14 @@ spec:
         - name: DB_NAME
           value: "webapp"
         - name: DB_USER
-          value: "webapp"  # Hard-coded user
+          value: "webapp"
         - name: DB_PASSWORD
-          value: "1234"  # Hard-coded password
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_PASSWORD
         - name: DB_HOST
-          value: "postgres-db"  # Replace with your PostgreSQL host, if needed
+          value: "postgres-db"
         - name: DB_PORT
           value: "5432"
 
@@ -37,23 +40,22 @@ apiVersion: v1
 kind: Service
 metadata:
   name: web-app
-  namespace: _{_NAMESPACE_}_
+  namespace: your-namespace # Replace with your actual namespace
 spec:
-  type: NodePort  # Change to NodePort
+  type: NodePort
   selector:
     app: web-app
   ports:
-    - port: 80         # The port that will be exposed
-      targetPort: 5000 # The port on the container
-      nodePort: 30000   # Specify the NodePort if you want a specific port; otherwise, one will be assigned automatically
+    - port: 80
+      targetPort: 5000
+      nodePort: 30000
 
 ---
-# PostgreSQL StatefulSet
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-db
-  namespace: _{_NAMESPACE_}_
+  namespace: your-namespace # Replace with your actual namespace
 spec:
   serviceName: "postgres-db"
   replicas: 1
@@ -67,10 +69,10 @@ spec:
     spec:
       initContainers:
       - name: db-init
-        image: postgres:14  # PostgreSQL image
+        image: postgres:14
         env:
         - name: POSTGRES_USER
-          value: "postgres"  # Using default 'postgres' superuser
+          value: "postgres"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -100,7 +102,7 @@ spec:
         - containerPort: 5432
         env:
         - name: POSTGRES_USER
-          value: "postgres"  # Using default 'postgres' superuser
+          value: "postgres"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -116,20 +118,18 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 10Gi  # Adjust storage size as needed
+          storage: 10Gi
       volumeMode: Filesystem
-      storageClassName: ""
-      selector: {}
+      storageClassName: "standard"
 
 ---
-# Headless Service for PostgreSQL StatefulSet
 apiVersion: v1
 kind: Service
 metadata:
   name: postgres-db
-  namespace: _{_NAMESPACE_}_
+  namespace: your-namespace # Replace with your actual namespace
 spec:
-  clusterIP: None  # Headless service for StatefulSet
+  clusterIP: None
   selector:
     app: postgres-db
   ports:
@@ -137,44 +137,28 @@ spec:
       targetPort: 5432
 
 ---
-# Secret for DB credentials
 apiVersion: v1
 kind: Secret
 metadata:
   name: db-secret
-  namespace: _{_NAMESPACE_}_
+  namespace: your-namespace # Replace with your actual namespace
 type: Opaque
 data:
   POSTGRES_PASSWORD: MTIzNA==  # Base64 encoded '1234'
-  DB_PASSWORD: MTIzNA==         # Base64 encoded '1234' for webapp user password
+  DB_PASSWORD: MTIzNA==         # Base64 encoded '1234'
 
 ---
-# PersistentVolume for local storage (hostPath)
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: postgres-local-pv
-  namespace: _{_NAMESPACE_}_
+  namespace: your-namespace # Replace with your actual namespace
 spec:
   capacity:
-    storage: 10Gi  # Adjust storage as needed
+    storage: 10Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: "manual"
   hostPath:
     path: "/mnt/data/postgres"  # Replace with your local path
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-storage-postgres-db-0
-  namespace: _{_NAMESPACE_}_
-spec:
-  accessModes: [ "ReadWriteOnce" ]
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: manual  # Ensure this matches the PV's storageClassName
-
