@@ -4,7 +4,7 @@ metadata:
   labels:
     app: web-app
   name: web-app
-  namespace: _{_NAMESPACE_}_  # Replace with your namespace
+  namespace: _{_NAMESPACE_}_
 spec:
   replicas: 1
   selector:
@@ -16,7 +16,7 @@ spec:
         app: web-app
     spec:
       containers:
-      - image: _{_IMAGE_}_  # Replace with your actual image
+      - image: _{_IMAGE_}_
         name: web-app
         ports:
         - containerPort: 5000
@@ -28,7 +28,7 @@ spec:
         - name: DB_PASSWORD
           value: "1234"  # Hard-coded password
         - name: DB_HOST
-          value: "postgres-db"  # Use service name for PostgreSQL StatefulSet
+          value: "postgres-db"  # Replace with your PostgreSQL host, if needed
         - name: DB_PORT
           value: "5432"
 
