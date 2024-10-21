@@ -65,12 +65,12 @@ jobs:
 
 
     # Step 8: Port Forwarding (optional for accessing the service)
-    - name: Port Forwarding
-      run: |
-        sleep 10
+    #- name: Port Forwarding
+    # run: |
+    #   sleep 10
         # Start port-forwarding in the background
         # Optional: Wait for a few seconds to ensure port forwarding is established
-        echo "Waiting for port forwarding to establish..."
-        kubectl port-forward svc/web-app 8080:80 --namespace="${{ secrets.NAMESPACE }}" &
-        echo "Port forwarding established. Access the web app at http://localhost:30000"
-        curl http://localhost:8080
+       # echo "Waiting for port forwarding to establish..."
+       # kubectl port-forward svc/web-app 8080:80 --namespace="${{ secrets.NAMESPACE }}" &
+       # echo "Port forwarding established. Access the web app at http://localhost:30000"
+       # curl http://localhost:8080
