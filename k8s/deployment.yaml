@@ -76,21 +76,23 @@ spec:
             secretKeyRef:
               name: db-secret
               key: POSTGRES_PASSWORD
-        - name: DB_USER_PASSWORD  # Moved here to avoid duplicate env section
+        - name: DB_USER_PASSWORD
           valueFrom:
             secretKeyRef:
               name: db-secret
               key: DB_PASSWORD
-        command: ['sh', '-c', '
-          until pg_isready -h postgres-db -p 5432; do
-            echo waiting for postgres;
-            sleep 2;
-          done;
-          psql -h postgres-db -U postgres -c "CREATE USER webapp WITH PASSWORD '\''$DB_USER_PASSWORD'\'';";
-          psql -h postgres-db -U postgres -c "CREATE DATABASE webapp;";
-          psql -h postgres-db -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE webapp TO webapp;";
-          psql -h postgres-db -U postgres -d webapp -c "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username VARCHAR(50), email VARCHAR(100), password VARCHAR(100));"
-        ']
+        command:
+          - sh
+          - -c
+          - |
+            until pg_isready -h postgres-db -p 5432; do
+              echo waiting for postgres;
+              sleep 2;
+            done;
+            psql -h postgres-db -U postgres -c "CREATE USER webapp WITH PASSWORD '$DB_USER_PASSWORD';";
+            psql -h postgres-db -U postgres -c "CREATE DATABASE webapp;";
+            psql -h postgres-db -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE webapp TO webapp;";
+            psql -h postgres-db -U postgres -d webapp -c "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username VARCHAR(50), email VARCHAR(100), password VARCHAR(100));"
       containers:
       - name: postgres
         image: postgres:14
