@@ -61,7 +61,7 @@ jobs:
     - name: Port Forwarding
       run: |
         # Start port-forwarding in the background
-        kubectl port-forward svc/web-app 30000:80 --namespace="${{ secrets.NAMESPACE }}" &
+        kubectl port-forward svc/web-app 8080:80 --namespace="${{ secrets.NAMESPACE }}" &
 
         # Optional: Wait for a few seconds to ensure port forwarding is established
         echo "Waiting for port forwarding to establish..."
