@@ -18,15 +18,4 @@ jobs:
         version: 'latest'  # Specify your desired kubectl version
 
     - name: Set kubeconfig
-      run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
-
-    - name: Replace placeholders in YAML
-      run: |
-        sed -i "s|_{_NAMESPACE_}_|webapp|g" k8s/deployment.yaml
-        sed -i "s|_{_IMAGE_}_|***/web-app:cef7f5f0ea0ccdd793876f0504e5a6446b4e61f6|g" k8s/deployment.yaml
-
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl create namespace webapp --dry-run=client -o yaml | kubectl apply -f -
-        kubectl apply -f k8s/deployment.yaml
-        kubectl get pod -n webapp
+      run: cat ~/.kube/config
