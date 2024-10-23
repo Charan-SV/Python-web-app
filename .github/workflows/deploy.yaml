@@ -35,7 +35,9 @@ jobs:
 
       - name: Create namespace and deploy
         run: |
+          sed -i "s|_{_NAMESPACE_}_|${{ secrets.NAMESPACE }}|g" k8s/deployment.yaml
+          sed -i "s|_{_IMAGE_}_|${{ secrets.DOCKERHUB_USERNAME }}/web-app:${{ github.sha }}|g" k8s/deployment.yaml
           kubectl create namespace webapp
-          kubectl apply -f templates/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml
           sleep 10
           kubectl get pod -n webapp
