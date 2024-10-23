@@ -24,12 +24,16 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/python-app:${{ github.sha }}
 
 
-      - name: Set up Kubectl
-        uses: azure/k8s-set-context@v1
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - name: Decode and write kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > /home/runner/work/_temp/kubeconfig
+        shell: bash
 
-      - name: Deploy
+      - name: Set KUBECONFIG environment variable
+        run: |
+          export KUBECONFIG=/home/runner/work/_temp/kubeconfig
+
+      - name: Create namespace and deploy
         run: |
           kubectl create namespace webapp
           kubectl apply -f templates/deployment.yaml
