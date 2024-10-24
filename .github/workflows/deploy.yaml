@@ -17,6 +17,9 @@ jobs:
       with:
         version: 'latest'
 
+    - name: Create .kube directory
+      run: mkdir -p $HOME/.kube
+
     - name: Write Kubeconfig to file
       run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
 
