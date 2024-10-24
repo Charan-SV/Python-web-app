@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-
+      
 permissions:
   id-token: write  # Grant write access to the id-token
   contents: read    # Ensure you have read access to the repository contents
