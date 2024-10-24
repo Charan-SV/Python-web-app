@@ -26,5 +26,4 @@ jobs:
 
     - name: View Kubeconfig
       run: |
-        cat $HOME/.kube/config
-        kubectl config view
+        kubectl get node
