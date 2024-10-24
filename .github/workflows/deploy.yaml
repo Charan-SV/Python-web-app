@@ -15,12 +15,10 @@ jobs:
     - name: Set up Kubectl
       uses: azure/setup-kubectl@v1
       with:
-        version: 'latest'  # Specify your desired kubectl version
+        version: 'latest'
 
-    - name: Set up Kubectl
-      uses: azure/k8s-set-context@v1
-      with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
+    - name: Write Kubeconfig to file
+      run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
 
-    - name: view
+    - name: View Kubeconfig
       run: kubectl config view
