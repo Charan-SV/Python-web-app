@@ -21,7 +21,10 @@ jobs:
       run: mkdir -p $HOME/.kube
 
     - name: Write Kubeconfig to file
-      run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
 
     - name: View Kubeconfig
-      run: kubectl config view
+      run: |
+        cat $HOME/.kube/config
+        kubectl config view
