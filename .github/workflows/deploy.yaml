@@ -17,7 +17,10 @@ jobs:
       with:
         version: 'latest'  # Specify your desired kubectl version
 
-    - name: Set up Kubeconfig
-      run: |
-        echo "${{ secrets.KUBECONFIG_DATA }}" > $HOME/.kube/config
-        kubectl config view
+    - name: Set up Kubectl
+      uses: azure/k8s-set-context@v1
+      with:
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+    - name: view
+      run: kubectl config view
