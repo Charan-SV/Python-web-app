@@ -33,6 +33,11 @@ spec:
           value: "Test@123"  # Hard-coded password
         - name: PGDATA
           value: /data/pgdata
+        resources:
+          requests:
+            storage: "1Gi"  # Request 1Gi of storage
+          limits:
+            storage: "2Gi"  # Limit storage to 2Gi
   volumeClaimTemplates:
   - metadata:
       name: postgresql-db-disk
