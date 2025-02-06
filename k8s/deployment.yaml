@@ -62,6 +62,7 @@ spec:
       labels:
         app: web-app
     spec:
+      automountServiceAccountToken: false
       containers:
       - image: _{_IMAGE_}_  # Replace with your web app image
         name: web-app
