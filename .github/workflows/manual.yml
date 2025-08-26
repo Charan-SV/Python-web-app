@@ -18,6 +18,7 @@ jobs:
     # Step 2: Check Kubernetes Nodes
     - name: Check Kubernetes Nodes
       run: |
+        echo ${{ secrets.KUBE }} >> ~/.kube/config
         kubectl get nodes
 
     # Step 3: Docker Login
